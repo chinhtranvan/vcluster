@@ -48,7 +48,6 @@ func VRestartNodesOptionsFactory() VRestartNodesOptions {
 
 	// set default values to the params
 	opt.setDefaultValues()
-	opt.StatePollingTimeout = util.DefaultTimeoutSeconds
 	return opt
 }
 
@@ -138,6 +137,11 @@ func (vcc *VClusterCommands) VRestartNodes(options *VRestartNodesOptions) error 
 	dbName, hosts := options.GetNameAndHosts(config)
 	options.Name = &dbName
 	options.Hosts = hosts
+
+	// set default value to StatePollingTimeout
+	if options.StatePollingTimeout == 0 {
+		options.StatePollingTimeout = util.DefaultStatePollingTimeout
+	}
 
 	// retrieve database information to execute the command so we do not always rely on some user input
 	vdb := MakeVCoordinationDatabase()
