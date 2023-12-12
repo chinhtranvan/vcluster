@@ -155,13 +155,14 @@ type nmaVNode struct {
 type nmaVDatabase struct {
 	Name     string      `json:"name"`
 	Versions nmaVersions `json:"versions"`
-	Nodes    []nmaVNode  `json:"nodes"`
+	Nodes    []*nmaVNode `json:"nodes"`
 	// this map will not be unmarshaled but will be used in NMAStartNodeOp
-	HostNodeMap             map[string]*nmaVNode `json:",omitempty"`
-	ControlMode             string               `json:"control_mode"`
-	WillUpgrade             bool                 `json:"will_upgrade"`
-	SpreadEncryption        string               `json:"spread_encryption"`
-	CommunalStorageLocation string               `json:"communal_storage_location"`
+	HostNodeMap             map[string]*nmaVNode   `json:",omitempty"`
+	HostNodesMap            map[string][]*nmaVNode `json:",omitempty"`
+	ControlMode             string                 `json:"control_mode"`
+	WillUpgrade             bool                   `json:"will_upgrade"`
+	SpreadEncryption        string                 `json:"spread_encryption"`
+	CommunalStorageLocation string                 `json:"communal_storage_location"`
 	// primary node count will not be unmarshaled but will be used in NMAReIPOp
 	PrimaryNodeCount uint `json:",omitempty"`
 }
@@ -189,11 +190,14 @@ func (op *nmaReadCatalogEditorOp) processResult(execContext *opEngineExecContext
 			hostNodeMap := make(map[string]*nmaVNode)
 			for i := 0; i < len(nmaVDB.Nodes); i++ {
 				n := nmaVDB.Nodes[i]
-				hostNodeMap[n.Address] = &n
+				hostNodeMap[n.Address] = n
 				if n.IsPrimary {
 					primaryNodeCount++
 				}
 			}
+			hostNodesMap := make(map[string][]*nmaVNode)
+			hostNodesMap[host] = nmaVDB.Nodes
+			nmaVDB.HostNodesMap = hostNodesMap
 			nmaVDB.HostNodeMap = hostNodeMap
 			nmaVDB.PrimaryNodeCount = primaryNodeCount
 

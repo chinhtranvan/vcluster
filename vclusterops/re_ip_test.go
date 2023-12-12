@@ -82,7 +82,7 @@ func TestTrimReIPList(t *testing.T) {
 		vnode := nmaVNode{}
 		vnode.Address = fmt.Sprintf("vnode%d", i+1)
 		vnode.Name = fmt.Sprintf("v_%s_node000%d", dbName, i+1)
-		nmaVDB.Nodes = append(nmaVDB.Nodes, vnode)
+		nmaVDB.Nodes = append(nmaVDB.Nodes, &vnode)
 	}
 	execContext.nmaVDatabase = nmaVDB
 

@@ -69,13 +69,18 @@ func (op *nmaStartNodeOp) updateRequestBody(execContext *opEngineExecContext) er
 		}
 	} else {
 		// use startup command information from NMA catalog/database endpoint when the database is down
-		for _, host := range op.hosts {
-			node, ok := execContext.nmaVDatabase.HostNodeMap[host]
-			if !ok {
-				return fmt.Errorf("[%s] the bootstrap node (%s) is not found from the catalog editor information: %+v",
-					op.name, host, execContext.nmaVDatabase)
-			}
-			err := op.updateHostRequestBodyMapFromNodeStartCommand(host, node.StartCommand)
+		hostsWithLatestCatalog := execContext.hostsWithLatestCatalog
+		if len(hostsWithLatestCatalog) == 0 {
+			return fmt.Errorf("could not find at least one host with the latest catalog")
+		}
+		hostWithLatestCatalog := hostsWithLatestCatalog[0]
+		nodesList, ok := execContext.nmaVDatabase.HostNodesMap[hostWithLatestCatalog]
+		if !ok {
+			return fmt.Errorf("[%s] the bootstrap node (%s) is not found from the catalog editor information: %+v",
+				op.name, hostWithLatestCatalog, execContext.nmaVDatabase)
+		}
+		for _, node := range nodesList {
+			err := op.updateHostRequestBodyMapFromNodeStartCommand(node.Address, node.StartCommand)
 			if err != nil {
 				return err
 			}
