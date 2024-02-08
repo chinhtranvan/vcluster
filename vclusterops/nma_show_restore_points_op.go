@@ -105,15 +105,20 @@ func (op *nmaShowRestorePointsOp) finalize(_ *opEngineExecContext) error {
 
 // RestorePoint contains information about a single restore point.
 type RestorePoint struct {
+	// +operator-sdk:csv:customresourcedefinitions:type=status
 	// Name of the archive that this restore point was created in.
 	Archive string `json:"archive"`
+	// +operator-sdk:csv:customresourcedefinitions:type=status
 	// The ID of the restore point. This is a form of a UID that is static for the restore point.
 	ID string `json:"id"`
+	// +operator-sdk:csv:customresourcedefinitions:type=status
 	// The current index of this restore point. Lower value means it was taken more recently.
 	// This changes when new restore points are created.
 	Index int `json:"index"`
+	// +operator-sdk:csv:customresourcedefinitions:type=status
 	// The timestamp when the restore point was created.
 	Timestamp string `json:"timestamp"`
+	// +operator-sdk:csv:customresourcedefinitions:type=status
 	// The version of Vertica running when the restore point was created.
 	VerticaVersion string `json:"vertica_version"`
 }
