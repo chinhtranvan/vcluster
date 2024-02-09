@@ -106,7 +106,7 @@ func (op *nmaShowRestorePointsOp) finalize(_ *opEngineExecContext) error {
 // RestorePoint contains information about a single restore point.
 type RestorePoint struct {
 	// Name of the archive that this restore point was created in.
-	Archive string `json:"archive"`
+	Archive string `json:"archive,omitempty"`
 	// The ID of the restore point. This is a form of a UID that is static for the restore point.
 	ID string `json:"id,omitempty"`
 	// The current index of this restore point. Lower value means it was taken more recently.
