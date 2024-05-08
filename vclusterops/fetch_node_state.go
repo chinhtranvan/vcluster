@@ -183,9 +183,13 @@ func (vcc VClusterCommands) produceListAllNodesInstructions(
 		return instructions, err
 	}
 
+	if vcc.Log.ForCli {
+		instructions = append(instructions,
+			&nmaHealthOp,
+			&nmaReadVerticaVersionOp)
+	}
+
 	instructions = append(instructions,
-		&nmaHealthOp,
-		&nmaReadVerticaVersionOp,
 		&httpsCheckNodeStateOp,
 	)
 
