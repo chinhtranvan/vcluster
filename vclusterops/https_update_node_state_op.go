@@ -35,7 +35,6 @@ func makeHTTPSUpdateNodeStateOp(vdb *VCoordinationDatabase,
 	op := httpsUpdateNodeStateOp{}
 	op.name = "HTTPSUpdateNodeStateOp"
 	op.description = "Update node state from running database"
-	op.hosts = vdb.HostList
 	op.vdb = vdb
 	op.useHTTPPassword = useHTTPPassword
 
@@ -65,6 +64,7 @@ func (op *httpsUpdateNodeStateOp) setupClusterHTTPRequest(hosts []string) error 
 }
 
 func (op *httpsUpdateNodeStateOp) prepare(execContext *opEngineExecContext) error {
+	op.hosts = op.vdb.HostList
 	execContext.dispatcher.setup(op.hosts)
 
 	return op.setupClusterHTTPRequest(op.hosts)
