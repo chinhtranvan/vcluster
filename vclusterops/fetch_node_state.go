@@ -8,6 +8,7 @@ import (
 
 type VFetchNodeStateOptions struct {
 	DatabaseOptions
+	GetVersion bool
 }
 
 func VFetchNodeStateOptionsFactory() VFetchNodeStateOptions {
@@ -183,7 +184,7 @@ func (vcc VClusterCommands) produceListAllNodesInstructions(
 		return instructions, err
 	}
 
-	if vcc.Log.ForCli {
+	if options.GetVersion {
 		instructions = append(instructions,
 			&nmaHealthOp,
 			&nmaReadVerticaVersionOp)

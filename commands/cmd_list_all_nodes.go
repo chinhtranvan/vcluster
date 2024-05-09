@@ -77,6 +77,9 @@ func (c *CmdListAllNodes) Parse(inputArgv []string, logger vlog.Printer) error {
 	// reset the value of those options to nil
 	c.ResetUserInputOptions(&c.fetchNodeStateOptions.DatabaseOptions)
 
+	// Set GetVersion to true so that the CLI can retrieve versions for down nodes
+	// by invoking two additional operations: NMAHealth and NMA readCatalogEditor
+	c.fetchNodeStateOptions.GetVersion = true
 	return c.validateParse(logger)
 }
 
