@@ -186,6 +186,11 @@ func (vcc VClusterCommands) produceReIPInstructions(options *VReIPOptions, vdb *
 	hosts := options.Hosts
 
 	nmaHealthOp := makeNMAHealthOp(hosts)
+	// need username for https operations
+	err := options.setUsePassword(vcc.Log)
+	if err != nil {
+		return instructions, err
+	}
 
 	// Re-IP should only be used for down DB, checking if db is running
 	checkDBRunningOp, err := makeHTTPSCheckRunningDBOp(hosts,
