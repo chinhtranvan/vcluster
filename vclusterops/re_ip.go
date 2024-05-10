@@ -35,6 +35,8 @@ type VReIPOptions struct {
 
 	// whether trim re-ip list based on the catalog info
 	TrimReIPList bool
+	// whether the database is running or not
+	CheckDBRunning bool
 }
 
 func VReIPFactory() VReIPOptions {
@@ -186,17 +188,22 @@ func (vcc VClusterCommands) produceReIPInstructions(options *VReIPOptions, vdb *
 	hosts := options.Hosts
 
 	nmaHealthOp := makeNMAHealthOp(hosts)
-
-	// Re-IP should only be used for down DB, checking if db is running
-	checkDBRunningOp, err := makeHTTPSCheckRunningDBOp(hosts,
-		options.usePassword, options.UserName, options.Password, ReIP)
+	// need username for https operations
+	err := options.setUsePassword(vcc.Log)
 	if err != nil {
 		return instructions, err
 	}
-	instructions = append(instructions,
-		&nmaHealthOp,
-		&checkDBRunningOp,
-	)
+
+	instructions = append(instructions, &nmaHealthOp)
+
+	if options.CheckDBRunning {
+		checkDBRunningOp, err := makeHTTPSCheckRunningDBOp(hosts,
+			options.usePassword, options.UserName, options.Password, ReIP)
+		if err != nil {
+			return instructions, err
+		}
+		instructions = append(instructions, &checkDBRunningOp)
+	}
 
 	// get network profiles of the new addresses
 	var newAddresses []string

@@ -51,7 +51,10 @@ func VStartDatabaseOptionsFactory() VStartDatabaseOptions {
 
 func (options *VStartDatabaseOptions) setDefaultValues() {
 	options.DatabaseOptions.setDefaultValues()
-	options.StatePollingTimeout = util.DefaultStatePollingTimeout
+	// set default value to StatePollingTimeout
+	if options.StatePollingTimeout == 0 {
+		options.StatePollingTimeout = util.DefaultStatePollingTimeout
+	}
 }
 
 func (options *VStartDatabaseOptions) validateRequiredOptions(logger vlog.Printer) error {
