@@ -187,25 +187,16 @@ func (vcc VClusterCommands) produceReIPInstructions(options *VReIPOptions, vdb *
 
 	nmaHealthOp := makeNMAHealthOp(hosts)
 
-	// Re-IP should only be used for down DB, checking if db is running
-	checkDBRunningOp, err := makeHTTPSCheckRunningDBOp(hosts,
-		options.usePassword, options.UserName, options.Password, ReIP)
-	if err != nil {
-		return instructions, err
-	}
-	instructions = append(instructions,
-		&nmaHealthOp,
-		&checkDBRunningOp,
-	)
-
 	// get network profiles of the new addresses
 	var newAddresses []string
 	for _, info := range options.ReIPList {
 		newAddresses = append(newAddresses, info.TargetAddress)
 	}
 	nmaNetworkProfileOp := makeNMANetworkProfileOp(newAddresses)
-
-	instructions = append(instructions, &nmaNetworkProfileOp)
+	instructions = append(instructions,
+		&nmaHealthOp,
+		&nmaNetworkProfileOp,
+	)
 
 	vdbWithPrimaryNodes := new(VCoordinationDatabase)
 	// When we cannot get db info from cluster_config.json, we will fetch it from NMA /nodes endpoint.
