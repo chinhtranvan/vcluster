@@ -140,15 +140,16 @@ func (c *CmdRemoveNode) Run(vcc vclusterops.ClusterCommands) error {
 
 	vdb, err := vcc.VRemoveNode(options)
 	if err != nil {
+		vcc.LogError(err, "fail to remove node")
 		return err
 	}
 
 	// write db info to vcluster config file
 	err = writeConfig(&vdb, true /*forceOverwrite*/)
 	if err != nil {
-		vcc.PrintWarning("fail to write config file, details: %s", err)
+		vcc.DisplayWarning("fail to write config file, details: %s", err)
 	}
-	vcc.PrintInfo("Successfully removed nodes %v from database %s", c.removeNodeOptions.HostsToRemove, options.DBName)
+	vcc.DisplayInfo("Successfully removed nodes %v from database %s", c.removeNodeOptions.HostsToRemove, options.DBName)
 
 	return nil
 }

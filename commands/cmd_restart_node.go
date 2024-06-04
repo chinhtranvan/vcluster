@@ -163,6 +163,7 @@ func (c *CmdRestartNodes) Run(vcc vclusterops.ClusterCommands) error {
 	// this is the instruction that will be used by both CLI and operator
 	err := vcc.VStartNodes(options)
 	if err != nil {
+		vcc.LogError(err, "fail to restart node")
 		return err
 	}
 
@@ -170,7 +171,7 @@ func (c *CmdRestartNodes) Run(vcc vclusterops.ClusterCommands) error {
 	for _, ip := range options.Nodes {
 		hostToRestart = append(hostToRestart, ip)
 	}
-	vcc.PrintInfo("Successfully restart hosts %s of the database %s", hostToRestart, options.DBName)
+	vcc.DisplayInfo("Successfully restarted hosts %s of the database %s", hostToRestart, options.DBName)
 
 	return nil
 }

@@ -30,6 +30,7 @@ type httpsStopDBOp struct {
 	sandbox       string
 	mainCluster   bool
 	RequestParams map[string]string
+	timeout       *int
 }
 
 func makeHTTPSStopDBOp(useHTTPPassword bool, userName string,
@@ -40,10 +41,11 @@ func makeHTTPSStopDBOp(useHTTPPassword bool, userName string,
 	op.useHTTPPassword = useHTTPPassword
 	op.sandbox = sandbox
 	op.mainCluster = mainCluster
+	op.timeout = timeout
 
 	// set the query params, "timeout" is optional
 	op.RequestParams = make(map[string]string)
-	if timeout != nil {
+	if timeout != nil && *timeout != 0 {
 		op.RequestParams["timeout"] = strconv.Itoa(*timeout)
 	}
 
@@ -159,9 +161,16 @@ func (op *httpsStopDBOp) processResult(_ *opEngineExecContext) error {
 				allErrs = errors.Join(allErrs, err)
 			}
 		} else {
-			if response["detail"] != "Shutdown: moveout complete" {
-				err = fmt.Errorf(`[%s] response detail should be 'Shutdown: moveout complete' but got '%s'`, op.name, response["detail"])
-				allErrs = errors.Join(allErrs, err)
+			if *op.timeout == 0 {
+				if response["detail"] != "Shutdown: sync complete" {
+					err = fmt.Errorf(`[%s] response detail should be 'Shutdown: sync complete' but got '%s'`, op.name, response["detail"])
+					allErrs = errors.Join(allErrs, err)
+				}
+			} else {
+				if response["detail"] != "Shutdown: moveout complete" {
+					err = fmt.Errorf(`[%s] response detail should be 'Shutdown: moveout complete' but got '%s'`, op.name, response["detail"])
+					allErrs = errors.Join(allErrs, err)
+				}
 			}
 		}
 	}

@@ -16,8 +16,6 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 	"github.com/vertica/vcluster/vclusterops"
 	"github.com/vertica/vcluster/vclusterops/vlog"
@@ -138,14 +136,14 @@ func (c *CmdReIP) Run(vcc vclusterops.ClusterCommands) error {
 		return err
 	}
 
-	vcc.PrintInfo("Re-ip is successfully completed")
+	vcc.DisplayInfo("Successfully changed the IP addresses of database nodes")
 
 	// update config file after running re_ip
 	if canUpdateConfig {
 		c.UpdateConfig(dbConfig)
 		err = dbConfig.write(options.ConfigPath, true /*forceOverwrite*/)
 		if err != nil {
-			fmt.Printf("Warning: fail to update config file, details %v\n", err)
+			vcc.DisplayWarning("fail to update config file, details %v\n", err)
 		}
 	}
 
